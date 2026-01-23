@@ -6,6 +6,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as crypto from 'crypto';
 import { registerGuidHoverProvider } from './hoverProvider';
 
 /**
@@ -17,6 +18,27 @@ export function activate(context: vscode.ExtensionContext): void {
 
   // Register hover provider for GUIDs
   registerGuidHoverProvider(context);
+
+  // Register insert GUID command
+  const insertGuidCommand = vscode.commands.registerCommand(
+    'guid-visual-overlay.insertGuid',
+    () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+      }
+
+      const guid = crypto.randomUUID();
+      editor.edit((editBuilder) => {
+        editor.selections.forEach((selection) => {
+          editBuilder.replace(selection, guid);
+        });
+      });
+    }
+  );
+
+  context.subscriptions.push(insertGuidCommand);
 }
 
 /**

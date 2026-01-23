@@ -13,7 +13,20 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
-  "contributes": {},
+  "contributes": {
+    "commands": [
+      {
+        "command": "guid-visual-overlay.insertGuid",
+        "title": "Insert GUID"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "guid-visual-overlay.insertGuid",
+        "key": "ctrl+k ctrl+alt+shift+g"
+      }
+    ]
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -25,5 +38,7 @@
     "@types/vscode": "^1.75.0",
     "typescript": "^5.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jdenticon": "^3.3.0"
+  }
 }

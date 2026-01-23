@@ -8,12 +8,28 @@
  */
 
 import * as crypto from 'crypto';
+import * as jdenticon from 'jdenticon';
+
+// Configure jdenticon for maximum variety
+jdenticon.configure({
+  hues: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330], // Full color spectrum
+  lightness: {
+    color: [0.4, 0.8],
+    grayscale: [0.3, 0.9]
+  },
+  saturation: {
+    color: 0.7,
+    grayscale: 0.0
+  },
+  backColor: '#00000000' // Transparent background
+});
 
 export interface VisualIdentity {
   label: string;      // Short identifier (e.g., "GUID·9QK2")
   color: string;      // RGB color (e.g., "#ff5733")
   symbol: string;     // Visual symbol (e.g., "◆")
   rawHash: string;    // Full SHA-256 hash for debugging
+  identiconSvg: string; // Jdenticon SVG for unique visual
 }
 
 /**
@@ -157,10 +173,14 @@ function generateSymbol(hash: string): string {
 export function generateVisualIdentity(guid: string): VisualIdentity {
   const hash = hashGuid(guid);
 
+  // Generate jdenticon SVG using the hash for better distribution (40x40 pixels)
+  const identiconSvg = jdenticon.toSvg(hash, 40);
+
   return {
     label: generateLabel(hash),
     color: generateColor(hash),
     symbol: generateSymbol(hash),
-    rawHash: hash
+    rawHash: hash,
+    identiconSvg
   };
 }

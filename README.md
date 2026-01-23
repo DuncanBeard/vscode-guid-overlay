@@ -17,13 +17,13 @@ All visual properties are derived **exclusively** from the GUID string itself. N
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     Extension Entry Point                   │
-│                      (extension.ts)                          │
+│                      (extension.ts)                         │
 └────────────────────────┬────────────────────────────────────┘
                          │
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Hover Provider                            │
-│                  (hoverProvider.ts)                          │
+│                    Hover Provider                           │
+│                  (hoverProvider.ts)                         │
 │  - Detects hover events over text                           │
 │  - Identifies GUID at cursor position                       │
 │  - Generates and displays visual overlay                    │
@@ -234,20 +234,20 @@ Expected consistent output:
 ### Bit Allocation
 
 | Component | Bits  | Range           | Purpose                    |
-|-----------|-------|-----------------|----------------------------|
+| --------- | ----- | --------------- | -------------------------- |
 | Label     | 0-39  | 40 bits         | Base36 identifier (4 char) |
 | Color Hue | 40-55 | 16 bits (0-360) | HSL hue component          |
 | Symbol    | 56-63 | 8 bits (0-4)    | Symbol set index           |
 
 ### Performance Characteristics
 
-| Operation              | Complexity | Time    |
-|------------------------|------------|---------|
-| GUID detection (line)  | O(n)       | <1ms    |
-| Position lookup        | O(k)       | <0.1ms  |
-| SHA-256 hash           | O(1)       | ~1ms    |
-| Visual generation      | O(1)       | <0.1ms  |
-| Hover display          | O(1)       | <5ms    |
+| Operation             | Complexity | Time   |
+| --------------------- | ---------- | ------ |
+| GUID detection (line) | O(n)       | <1ms   |
+| Position lookup       | O(k)       | <0.1ms |
+| SHA-256 hash          | O(1)       | ~1ms   |
+| Visual generation     | O(1)       | <0.1ms |
+| Hover display         | O(1)       | <5ms   |
 
 **Total hover latency:** <10ms (imperceptible)
 

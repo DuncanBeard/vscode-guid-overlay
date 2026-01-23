@@ -52,30 +52,18 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    */
   private createHoverContent(
     guid: string,
-    identity: { label: string; color: string; symbol: string; rawHash: string }
+    identity: { label: string; color: string; symbol: string; rawHash: string; identiconSvg: string }
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
     markdown.isTrusted = true;
     markdown.supportHtml = true;
 
-    // Visual identity display
-    // Format: [Symbol] [Label]
-    // Color indicator shown as inline HTML
-    markdown.appendMarkdown(`### ${identity.symbol} \`${identity.label}\`\n\n`);
+    // Convert SVG to base64 data URI for embedding in markdown
+    const svgBase64 = Buffer.from(identity.identiconSvg).toString('base64');
+    const svgDataUri = `data:image/svg+xml;base64,${svgBase64}`;
 
-    // Color swatch (HTML block)
-    markdown.appendMarkdown(
-      `<div style="display: inline-block; width: 16px; height: 16px; background-color: ${identity.color}; border: 1px solid #ccc; border-radius: 3px; margin-right: 8px; vertical-align: middle;"></div>`
-    );
-    markdown.appendMarkdown(`<code style="vertical-align: middle;">${identity.color}</code>\n\n`);
-
-    // GUID value
-    markdown.appendMarkdown(`**GUID:** \`${guid}\`\n\n`);
-
-    // Hash (for debugging/verification)
-    markdown.appendMarkdown(`<details><summary>Hash</summary>\n\n`);
-    markdown.appendMarkdown(`\`\`\`\n${identity.rawHash}\n\`\`\`\n\n`);
-    markdown.appendMarkdown(`</details>`);
+    // Large identicon image only
+    markdown.appendMarkdown(`<img src="${svgDataUri}" width="120" height="120" />`);
 
     return new vscode.Hover(markdown);
   }
