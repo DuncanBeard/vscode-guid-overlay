@@ -8,6 +8,7 @@
 import * as vscode from 'vscode';
 import { getGuidAtPosition } from './guidDetector';
 import { generateVisualIdentity } from './visualIdentity';
+import { getCachedAadObject, triggerAadLookup, formatAadObjectForHover, AadObject } from './aadLookup';
 
 /**
  * Hover provider for GUID visual overlays
@@ -17,12 +18,14 @@ export class GuidHoverProvider implements vscode.HoverProvider {
   /**
    * Provide hover content for GUID at position
    * Returns null if no GUID found at position
+   * 
+   * Avatar loads immediately; AAD info appears on subsequent hovers once cached
    */
   provideHover(
     document: vscode.TextDocument,
     position: vscode.Position,
     token: vscode.CancellationToken
-  ): vscode.ProviderResult<vscode.Hover> {
+  ): vscode.Hover | null {
     // Get text at current line
     const line = document.lineAt(position.line);
     const lineText = line.text;
@@ -37,15 +40,29 @@ export class GuidHoverProvider implements vscode.HoverProvider {
       return null;
     }
 
-    // Get configured avatar style
+    // Get configured avatar style and AAD lookup setting
     const config = vscode.workspace.getConfiguration('guidVisualOverlay');
     const styleName = config.get<string>('avatarStyle', 'bottts');
+    const enableAadLookup = config.get<boolean>('enableAadLookup', false);
 
-    // Generate deterministic visual identity
+    // Generate deterministic visual identity (synchronous)
     const identity = generateVisualIdentity(guid, styleName);
 
-    // Create hover content with visual overlay
-    const hover = this.createHoverContent(guid, identity);
+    // Check cache synchronously for AAD info (non-blocking)
+    let aadObject: AadObject | null = null;
+    if (enableAadLookup) {
+      // Get from cache if available (immediate)
+      const cached = getCachedAadObject(guid);
+      if (cached !== undefined) {
+        aadObject = cached; // Use cached result (may be null if not found in AAD)
+      } else {
+        // Not in cache - trigger background lookup for next hover
+        triggerAadLookup(guid);
+      }
+    }
+
+    // Create hover content with visual overlay (returns immediately)
+    const hover = this.createHoverContent(guid, identity, aadObject);
 
     return hover;
   }
@@ -56,7 +73,8 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    */
   private createHoverContent(
     guid: string,
-    identity: { label: string; color: string; symbol: string; rawHash: string; avatarSvg: string }
+    identity: { label: string; color: string; symbol: string; rawHash: string; avatarSvg: string },
+    aadObject: AadObject | null
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
     markdown.isTrusted = true;
@@ -68,6 +86,12 @@ export class GuidHoverProvider implements vscode.HoverProvider {
 
     // Large avatar image only
     markdown.appendMarkdown(`<img src="${svgDataUri}" width="120" height="120" />`);
+
+    // Append AAD object info if found
+    if (aadObject) {
+      markdown.appendMarkdown('\n\n---\n\n');
+      markdown.appendMarkdown(formatAadObjectForHover(aadObject));
+    }
 
     return new vscode.Hover(markdown);
   }

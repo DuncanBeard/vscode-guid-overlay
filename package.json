@@ -97,6 +97,18 @@
             "Thumbs - Thumbs up/down icons"
           ],
           "description": "The avatar style to use for GUID visualization"
+        },
+        "guidVisualOverlay.enableAadLookup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable Azure AD lookup for GUIDs. Requires Azure CLI (az) to be installed and authenticated."
+        },
+        "guidVisualOverlay.aadLookupTimeout": {
+          "type": "number",
+          "default": 5000,
+          "minimum": 1000,
+          "maximum": 30000,
+          "description": "Timeout in milliseconds for Azure AD lookup commands."
         }
       }
     }
