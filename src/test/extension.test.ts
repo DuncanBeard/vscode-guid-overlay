@@ -123,50 +123,22 @@ describe('Visual Identity', () => {
   const testGuid = '550e8400-e29b-41d4-a716-446655440000';
 
   describe('generateVisualIdentity', () => {
-    it('should return all required properties', () => {
+    it('should return avatarSvg property', () => {
       const identity = generateVisualIdentity(testGuid);
-      assert.ok(identity.label);
-      assert.ok(identity.color);
-      assert.ok(identity.symbol);
-      assert.ok(identity.rawHash);
       assert.ok(identity.avatarSvg);
+      assert.ok(identity.avatarSvg.startsWith('<svg'));
     });
 
     it('should generate deterministic output', () => {
       const identity1 = generateVisualIdentity(testGuid);
       const identity2 = generateVisualIdentity(testGuid);
-      assert.strictEqual(identity1.label, identity2.label);
-      assert.strictEqual(identity1.color, identity2.color);
-      assert.strictEqual(identity1.symbol, identity2.symbol);
-      assert.strictEqual(identity1.rawHash, identity2.rawHash);
+      assert.strictEqual(identity1.avatarSvg, identity2.avatarSvg);
     });
 
     it('should generate different output for different GUIDs', () => {
       const identity1 = generateVisualIdentity('550e8400-e29b-41d4-a716-446655440000');
       const identity2 = generateVisualIdentity('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
-      assert.notStrictEqual(identity1.rawHash, identity2.rawHash);
-    });
-
-    it('should generate label in GUID·XXXX format', () => {
-      const identity = generateVisualIdentity(testGuid);
-      assert.match(identity.label, /^GUID·[0-9A-Z]{4}$/);
-    });
-
-    it('should generate valid hex color', () => {
-      const identity = generateVisualIdentity(testGuid);
-      assert.match(identity.color, /^#[0-9a-f]{6}$/);
-    });
-
-    it('should generate symbol from allowed set', () => {
-      const identity = generateVisualIdentity(testGuid);
-      const allowedSymbols = ['■', '◆', '●', '▲', '⬢'];
-      assert.ok(allowedSymbols.includes(identity.symbol));
-    });
-
-    it('should generate 64-character SHA-256 hash', () => {
-      const identity = generateVisualIdentity(testGuid);
-      assert.strictEqual(identity.rawHash.length, 64);
-      assert.match(identity.rawHash, /^[0-9a-f]{64}$/);
+      assert.notStrictEqual(identity1.avatarSvg, identity2.avatarSvg);
     });
   });
 

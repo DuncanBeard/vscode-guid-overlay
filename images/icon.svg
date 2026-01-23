@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Background -->
+  <rect width="128" height="128" rx="16" fill="#1e1e1e"/>
+
+  <!-- GUID text representation -->
+  <text x="64" y="32" font-family="monospace" font-size="8" fill="#569cd6" text-anchor="middle">
+    <tspan>a1b2c3d4</tspan>
+  </text>
+
+  <!-- Robot/Avatar body (bottts style inspired) -->
+  <rect x="44" y="44" width="40" height="50" rx="8" fill="#4fc3f7"/>
+
+  <!-- Robot face plate -->
+  <rect x="48" y="48" width="32" height="28" rx="4" fill="#263238"/>
+
+  <!-- Eyes -->
+  <circle cx="56" cy="60" r="5" fill="#4fc3f7"/>
+  <circle cx="72" cy="60" r="5" fill="#4fc3f7"/>
+  <circle cx="56" cy="60" r="2" fill="#ffffff"/>
+  <circle cx="72" cy="60" r="2" fill="#ffffff"/>
+
+  <!-- Mouth/speaker -->
+  <rect x="54" y="70" width="20" height="3" rx="1" fill="#4fc3f7"/>
+
+  <!-- Antenna -->
+  <rect x="62" y="36" width="4" height="10" fill="#4fc3f7"/>
+  <circle cx="64" cy="36" r="4" fill="#ff7043"/>
+
+  <!-- Side details -->
+  <rect x="36" y="56" width="6" height="16" rx="2" fill="#4fc3f7"/>
+  <rect x="86" y="56" width="6" height="16" rx="2" fill="#4fc3f7"/>
+
+  <!-- Bottom GUID hint -->
+  <text x="64" y="110" font-family="monospace" font-size="7" fill="#6a9955" text-anchor="middle">
+    <tspan>GUID → Avatar</tspan>
+  </text>
+
+  <!-- Decorative hex colors representing determinism -->
+  <circle cx="24" cy="64" r="8" fill="#ce93d8"/>
+  <circle cx="104" cy="64" r="8" fill="#81c784"/>
+  <circle cx="24" cy="84" r="6" fill="#ffb74d"/>
+  <circle cx="104" cy="84" r="6" fill="#64b5f6"/>
+</svg>

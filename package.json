@@ -2,8 +2,13 @@
   "name": "guid-visual-overlay",
   "displayName": "GUID Visual Overlay",
   "description": "Deterministic visual identity overlay for GUIDs/UUIDs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "duncanbeard",
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/DuncanBeard/vscode-guid-overlay.git"

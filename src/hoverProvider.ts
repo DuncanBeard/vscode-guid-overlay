@@ -56,7 +56,7 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    */
   private createHoverContent(
     guid: string,
-    identity: { label: string; color: string; symbol: string; rawHash: string; avatarSvg: string }
+    identity: { avatarSvg: string }
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
     markdown.isTrusted = true;
