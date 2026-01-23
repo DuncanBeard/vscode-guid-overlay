@@ -13,6 +13,10 @@
     "type": "git",
     "url": "https://github.com/DuncanBeard/vscode-guid-overlay.git"
   },
+  "bugs": {
+    "url": "https://github.com/DuncanBeard/vscode-guid-overlay/issues"
+  },
+  "homepage": "https://github.com/DuncanBeard/vscode-guid-overlay#readme",
   "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
@@ -20,9 +24,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -126,7 +128,7 @@
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.75.0",
     "esbuild": "^0.27.2",
-    "mocha": "^11.7.5",
+    "mocha": "^11.3.0",
     "sharp": "^0.34.5",
     "typescript": "^5.0.0"
   },

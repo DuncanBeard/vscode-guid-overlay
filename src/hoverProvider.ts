@@ -59,15 +59,17 @@ export class GuidHoverProvider implements vscode.HoverProvider {
     identity: { avatarSvg: string }
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
-    markdown.isTrusted = true;
-    markdown.supportHtml = true;
+    // Security: Use markdown image syntax instead of HTML
+    // This avoids the need for isTrusted=true and supportHtml=true
+    markdown.isTrusted = false;
+    markdown.supportHtml = false;
 
     // Convert SVG to base64 data URI for embedding in markdown
     const svgBase64 = Buffer.from(identity.avatarSvg).toString('base64');
     const svgDataUri = `data:image/svg+xml;base64,${svgBase64}`;
 
-    // Large avatar image only
-    markdown.appendMarkdown(`<img src="${svgDataUri}" width="120" height="120" />`);
+    // Use markdown image syntax (safer than HTML)
+    markdown.appendMarkdown(`![GUID Avatar](${svgDataUri})`);
 
     return new vscode.Hover(markdown);
   }
@@ -79,9 +81,12 @@ export class GuidHoverProvider implements vscode.HoverProvider {
 export function registerGuidHoverProvider(context: vscode.ExtensionContext): void {
   const provider = new GuidHoverProvider();
 
-  // Register for all languages/files
+  // Register for file and untitled schemes only (security best practice)
   const disposable = vscode.languages.registerHoverProvider(
-    { scheme: '*', language: '*' },
+    [
+      { scheme: 'file' },
+      { scheme: 'untitled' }
+    ],
     provider
   );
 
