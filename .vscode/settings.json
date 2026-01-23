@@ -1,0 +1,5 @@
+{
+  "mochaExplorer.files": "out/test/**/*.test.js",
+  "mochaExplorer.require": [],
+  "mochaExplorer.ui": "bdd"
+}
