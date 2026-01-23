@@ -1,0 +1,24 @@
+# Source files (compiled to out/)
+src/**
+tsconfig.json
+
+# Development files
+.vscode/**
+.github/**
+.git/**
+.gitignore
+
+# Test and sandbox files
+sandbox/**
+test-*.js
+test-*.txt
+
+# Node modules (bundled dependencies are in out/)
+node_modules/**
+
+# Package files
+*.vsix
+package-lock.json
+
+# Documentation (keep README.md)
+CHANGELOG.md
