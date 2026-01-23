@@ -117,9 +117,7 @@
     "build": "bun run build.ts",
     "compile": "bun run build.ts",
     "watch": "bun --watch build.ts",
-    "compile-tests": "bun build ./src/test/extension.test.ts --outdir ./out/test --target node --format cjs",
-    "pretest": "bun run compile-tests",
-    "test": "bun run compile-tests && bun test"
+    "test": "bun test src/test/extension.test.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.1.15",

@@ -6,7 +6,3 @@ frozen = false
 
 # Install exact versions
 exact = true
-
-[test]
-# Test configuration
-preload = ["./test-setup.ts"]
