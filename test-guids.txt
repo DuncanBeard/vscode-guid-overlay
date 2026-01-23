@@ -1,0 +1,75 @@
+GUID Visual Overlay Test File
+==============================
+
+Hover over any GUID below to see its deterministic visual identity.
+
+Test Case 1: Same GUID Multiple Times
+--------------------------------------
+The same GUID should always show identical label, color, and symbol.
+
+550e8400-e29b-41d4-a716-446655440000
+550e8400-e29b-41d4-a716-446655440000
+550e8400-e29b-41d4-a716-446655440000
+
+
+Test Case 2: Different GUIDs
+-----------------------------
+Each unique GUID should have a distinct visual identity.
+
+6ba7b810-9dad-11d1-80b4-00c04fd430c8
+123e4567-e89b-12d3-a456-426614174000
+9f4e8cd0-1a2b-3c4d-5e6f-7a8b9c0d1e2f
+a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+
+Test Case 3: Case Insensitivity
+--------------------------------
+These should show the same visual (normalized to lowercase):
+
+550E8400-E29B-41D4-A716-446655440000
+550e8400-e29b-41d4-a716-446655440000
+550E8400-e29b-41D4-A716-446655440000
+
+
+Test Case 4: Common UUIDs
+--------------------------
+Well-known UUID namespace identifiers:
+
+6ba7b810-9dad-11d1-80b4-00c04fd430c8  (DNS namespace)
+6ba7b811-9dad-11d1-80b4-00c04fd430c8  (URL namespace)
+6ba7b812-9dad-11d1-80b4-00c04fd430c8  (OID namespace)
+6ba7b814-9dad-11d1-80b4-00c04fd430c8  (X.500 namespace)
+
+
+Test Case 5: Nil UUID
+---------------------
+00000000-0000-0000-0000-000000000000
+
+
+Test Case 6: Max UUID
+---------------------
+ffffffff-ffff-ffff-ffff-ffffffffffff
+
+
+Test Case 7: Sample Application Data
+-------------------------------------
+User ID: 7c9e6679-7425-40de-944b-e07fc1f90ae7
+Session ID: 5f3b2c1a-8d4e-4a2b-9c1d-3e5f7a9b2c4d
+Transaction ID: 2a1b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+Order ID: 8b7c6d5e-4f3a-2b1c-0d9e-8f7a6b5c4d3e
+
+
+Test Case 8: Repeated GUID Verification
+----------------------------------------
+Verify that this GUID shows the same identity as in Test Case 1:
+
+550e8400-e29b-41d4-a716-446655440000
+
+
+Instructions:
+-------------
+1. Hover over each GUID to see the visual overlay
+2. Verify same GUIDs show identical visuals
+3. Note the format: [Symbol] GUID·[Label] with color swatch
+4. Reload VS Code (Ctrl+R) and verify visuals remain unchanged
+5. Test on different machine to verify cross-machine consistency
