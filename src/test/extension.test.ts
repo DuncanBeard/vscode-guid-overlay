@@ -1,6 +1,6 @@
 /**
  * Unit tests for GUID Visual Overlay extension
- * 
+ *
  * Run with: npm test
  */
 
@@ -204,13 +204,13 @@ describe('Performance', () => {
   describe('GUID Detection Performance', () => {
     it(`should detect GUID in < 1ms average (${iterations} iterations)`, () => {
       const text = 'User ID: 550e8400-e29b-41d4-a716-446655440000 is active';
-      
+
       const start = process.hrtime.bigint();
       for (let i = 0; i < iterations; i++) {
         getGuidAtPosition(text, 20);
       }
       const end = process.hrtime.bigint();
-      
+
       const avgMs = Number(end - start) / iterations / 1_000_000;
       console.log(`      Average GUID detection time: ${avgMs.toFixed(4)}ms`);
       assert.ok(avgMs < 1, `Detection took ${avgMs}ms, expected < 1ms`);
@@ -224,7 +224,7 @@ describe('Performance', () => {
         generateVisualIdentity(testGuid);
       }
       const end = process.hrtime.bigint();
-      
+
       const avgMs = Number(end - start) / iterations / 1_000_000;
       console.log(`      Average identity generation time: ${avgMs.toFixed(4)}ms`);
       assert.ok(avgMs < 50, `Generation took ${avgMs}ms, expected < 50ms`);
@@ -238,7 +238,7 @@ describe('Performance', () => {
         generateAvatarSvg(testGuid, 'bottts');
       }
       const end = process.hrtime.bigint();
-      
+
       const avgMs = Number(end - start) / iterations / 1_000_000;
       console.log(`      Average SVG generation time: ${avgMs.toFixed(4)}ms`);
       assert.ok(avgMs < 100, `SVG generation took ${avgMs}ms, expected < 100ms`);
@@ -246,9 +246,9 @@ describe('Performance', () => {
 
     it('should measure end-to-end hover simulation time', () => {
       const text = 'User ID: 550e8400-e29b-41d4-a716-446655440000 is active';
-      
+
       const start = process.hrtime.bigint();
-      
+
       // Simulate hover workflow
       const guid = getGuidAtPosition(text, 20);
       if (guid) {
@@ -256,10 +256,10 @@ describe('Performance', () => {
         // Simulate base64 encoding for hover display
         const svgBase64 = Buffer.from(identity.avatarSvg).toString('base64');
       }
-      
+
       const end = process.hrtime.bigint();
       const totalMs = Number(end - start) / 1_000_000;
-      
+
       console.log(`      End-to-end hover time: ${totalMs.toFixed(4)}ms`);
       assert.ok(totalMs < 200, `Total hover time ${totalMs}ms, expected < 200ms`);
     });
