@@ -3,6 +3,11 @@
   "displayName": "GUID Visual Overlay",
   "description": "Deterministic visual identity overlay for GUIDs/UUIDs",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DuncanBeard/vscode-guid-overlay.git"
+  },
+  "license": "MIT",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -102,16 +107,19 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
-    "test": "npm run compile && mocha out/test/**/*.test.js"
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "compile": "npm run esbuild-base -- --sourcemap",
+    "watch": "npm run esbuild-base -- --sourcemap --watch",
+    "compile-tests": "tsc -p ./",
+    "pretest": "npm run compile-tests",
+    "test": "npm run compile-tests && mocha out/test/**/*.test.js"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.75.0",
+    "esbuild": "^0.27.2",
     "mocha": "^11.7.5",
     "typescript": "^5.0.0"
   },

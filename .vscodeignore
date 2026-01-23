@@ -12,6 +12,7 @@ tsconfig.json
 sandbox/**
 test-*.js
 test-*.txt
+out/test/**
 
 # Node modules (bundled dependencies are in out/)
 node_modules/**
