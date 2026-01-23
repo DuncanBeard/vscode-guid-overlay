@@ -39,6 +39,37 @@ A popup will display a unique avatar for that GUID.
 
 GUIDs are hard to tell apart at a glance. This extension gives each one a memorable visual identity, so you can quickly recognize when two GUIDs match — or don't.
 
+## Development
+
+This extension is built with [Bun](https://bun.sh), a fast JavaScript runtime and bundler.
+
+### Prerequisites
+
+- [Bun](https://bun.sh) - Install with `curl -fsSL https://bun.sh/install | bash`
+- VS Code
+
+### Building
+
+```bash
+# Install dependencies
+bun install
+
+# Development build
+bun run build
+
+# Production build (minified)
+bun run build.ts --minify
+
+# Watch mode
+bun --watch build.ts
+```
+
+### Publishing
+
+```bash
+bun run vscode:prepublish
+```
+
 ## License
 
 MIT

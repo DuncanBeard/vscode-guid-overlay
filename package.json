@@ -113,20 +113,17 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
-    "compile": "npm run esbuild-base -- --sourcemap",
-    "watch": "npm run esbuild-base -- --sourcemap --watch",
-    "compile-tests": "tsc -p ./",
-    "pretest": "npm run compile-tests",
-    "test": "npm run compile-tests && mocha out/test/**/*.test.js"
+    "vscode:prepublish": "bun run build.ts --minify",
+    "build": "bun run build.ts",
+    "compile": "bun run build.ts",
+    "watch": "bun --watch build.ts",
+    "compile-tests": "bun build ./src/test/extension.test.ts --outdir ./out/test --target node --format cjs",
+    "pretest": "bun run compile-tests",
+    "test": "bun run compile-tests && bun test"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^18.0.0",
+    "@types/bun": "^1.1.15",
     "@types/vscode": "^1.75.0",
-    "esbuild": "^0.27.2",
-    "mocha": "^11.7.5",
     "sharp": "^0.34.5",
     "typescript": "^5.0.0"
   },
