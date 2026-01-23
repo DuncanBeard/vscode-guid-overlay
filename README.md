@@ -289,6 +289,42 @@ Expected consistent output:
 
 ---
 
+## Development
+
+### Building
+
+```bash
+npm install          # Install dependencies
+npm run compile      # Build with esbuild
+npm run watch        # Watch mode for development
+npm test             # Run unit tests
+```
+
+### Packaging
+
+```bash
+vsce package         # Creates guid-visual-overlay-x.x.x.vsix
+```
+
+### Publishing to VS Code Marketplace
+
+1. **Create a Publisher** (one-time): https://marketplace.visualstudio.com/manage
+
+2. **Create a Personal Access Token**:
+   - Go to https://dev.azure.com
+   - Profile → Personal access tokens
+   - Create token with **Marketplace > Manage** scope
+
+3. **Login and Publish**:
+   ```bash
+   vsce login duncanbeard    # Paste PAT when prompted
+   vsce publish              # Publish current version
+   vsce publish patch        # Bump patch version and publish (1.0.0 → 1.0.1)
+   vsce publish minor        # Bump minor version and publish (1.0.0 → 1.1.0)
+   ```
+
+---
+
 ## File Structure
 
 ```
