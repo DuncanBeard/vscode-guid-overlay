@@ -8,28 +8,62 @@
  */
 
 import * as crypto from 'crypto';
-import * as jdenticon from 'jdenticon';
-
-// Configure jdenticon for maximum variety
-jdenticon.configure({
-  hues: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330], // Full color spectrum
-  lightness: {
-    color: [0.4, 0.8],
-    grayscale: [0.3, 0.9]
-  },
-  saturation: {
-    color: 0.7,
-    grayscale: 0.0
-  },
-  backColor: '#00000000' // Transparent background
-});
+import { createAvatar, Style } from '@dicebear/core';
+import * as collection from '@dicebear/collection';
 
 export interface VisualIdentity {
   label: string;      // Short identifier (e.g., "GUID·9QK2")
   color: string;      // RGB color (e.g., "#ff5733")
   symbol: string;     // Visual symbol (e.g., "◆")
   rawHash: string;    // Full SHA-256 hash for debugging
-  identiconSvg: string; // Jdenticon SVG for unique visual
+  avatarSvg: string;  // DiceBear SVG for unique visual
+}
+
+// Map of style names to DiceBear style modules
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const styleMap: Record<string, Style<any>> = {
+  adventurer: collection.adventurer,
+  adventurerNeutral: collection.adventurerNeutral,
+  avataaars: collection.avataaars,
+  avataaarsNeutral: collection.avataaarsNeutral,
+  bigEars: collection.bigEars,
+  bigEarsNeutral: collection.bigEarsNeutral,
+  bigSmile: collection.bigSmile,
+  bottts: collection.bottts,
+  botttsNeutral: collection.botttsNeutral,
+  croodles: collection.croodles,
+  croodlesNeutral: collection.croodlesNeutral,
+  dylan: collection.dylan,
+  funEmoji: collection.funEmoji,
+  glass: collection.glass,
+  icons: collection.icons,
+  identicon: collection.identicon,
+  initials: collection.initials,
+  lorelei: collection.lorelei,
+  loreleiNeutral: collection.loreleiNeutral,
+  micah: collection.micah,
+  miniavs: collection.miniavs,
+  notionists: collection.notionists,
+  notionistsNeutral: collection.notionistsNeutral,
+  openPeeps: collection.openPeeps,
+  personas: collection.personas,
+  pixelArt: collection.pixelArt,
+  pixelArtNeutral: collection.pixelArtNeutral,
+  rings: collection.rings,
+  shapes: collection.shapes,
+  thumbs: collection.thumbs,
+};
+
+/**
+ * Generate avatar SVG using DiceBear
+ */
+export function generateAvatarSvg(guid: string, styleName: string): string {
+  const style = styleMap[styleName] || collection.bottts;
+  const avatar = createAvatar(style, {
+    seed: guid,
+    size: 120,
+  });
+  return avatar.toString();
 }
 
 /**
@@ -168,19 +202,20 @@ function generateSymbol(hash: string): string {
  * All properties are deterministically derived from the GUID string
  *
  * @param guid - Canonical GUID string (lowercase, dashed)
+ * @param styleName - DiceBear style name from configuration
  * @returns Visual identity with label, color, and symbol
  */
-export function generateVisualIdentity(guid: string): VisualIdentity {
+export function generateVisualIdentity(guid: string, styleName: string = 'bottts'): VisualIdentity {
   const hash = hashGuid(guid);
 
-  // Generate jdenticon SVG using the hash for better distribution (40x40 pixels)
-  const identiconSvg = jdenticon.toSvg(hash, 40);
+  // Generate DiceBear avatar SVG
+  const avatarSvg = generateAvatarSvg(guid, styleName);
 
   return {
     label: generateLabel(hash),
     color: generateColor(hash),
     symbol: generateSymbol(hash),
     rawHash: hash,
-    identiconSvg
+    avatarSvg
   };
 }

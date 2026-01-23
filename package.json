@@ -25,7 +25,81 @@
         "command": "guid-visual-overlay.insertGuid",
         "key": "ctrl+k ctrl+alt+shift+g"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "GUID Visual Overlay",
+      "properties": {
+        "guidVisualOverlay.avatarStyle": {
+          "type": "string",
+          "default": "bottts",
+          "enum": [
+            "adventurer",
+            "adventurerNeutral",
+            "avataaars",
+            "avataaarsNeutral",
+            "bigEars",
+            "bigEarsNeutral",
+            "bigSmile",
+            "bottts",
+            "botttsNeutral",
+            "croodles",
+            "croodlesNeutral",
+            "dylan",
+            "funEmoji",
+            "glass",
+            "icons",
+            "identicon",
+            "initials",
+            "lorelei",
+            "loreleiNeutral",
+            "micah",
+            "miniavs",
+            "notionists",
+            "notionistsNeutral",
+            "openPeeps",
+            "personas",
+            "pixelArt",
+            "pixelArtNeutral",
+            "rings",
+            "shapes",
+            "thumbs"
+          ],
+          "enumDescriptions": [
+            "Adventurer - Illustrated adventure characters",
+            "Adventurer Neutral - Adventurer with neutral expressions",
+            "Avataaars - Cartoon people (like Slack avatars)",
+            "Avataaars Neutral - Avataaars with neutral expressions",
+            "Big Ears - Cute characters with big ears",
+            "Big Ears Neutral - Big Ears with neutral expressions",
+            "Big Smile - Happy smiling characters",
+            "Bottts - Robot avatars (VS Code style)",
+            "Bottts Neutral - Robots with neutral colors",
+            "Croodles - Hand-drawn doodle characters",
+            "Croodles Neutral - Croodles with neutral expressions",
+            "Dylan - Stylized portrait illustrations",
+            "Fun Emoji - Colorful emoji-style faces",
+            "Glass - Glossy abstract shapes",
+            "Icons - Simple icon-based avatars",
+            "Identicon - GitHub-style geometric patterns",
+            "Initials - Letter-based avatars",
+            "Lorelei - Illustrated portrait style",
+            "Lorelei Neutral - Lorelei with neutral expressions",
+            "Micah - Modern illustrated avatars",
+            "Miniavs - Minimal avatar illustrations",
+            "Notionists - Notion-style characters",
+            "Notionists Neutral - Notionists with neutral expressions",
+            "Open Peeps - Hand-drawn people illustrations",
+            "Personas - Character personas",
+            "Pixel Art - Retro pixel art characters",
+            "Pixel Art Neutral - Pixel art with neutral expressions",
+            "Rings - Colorful ring patterns",
+            "Shapes - Abstract geometric shapes",
+            "Thumbs - Thumbs up/down icons"
+          ],
+          "description": "The avatar style to use for GUID visualization"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -39,6 +113,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@dicebear/collection": "^9.3.1",
+    "@dicebear/core": "^9.3.1",
     "jdenticon": "^3.3.0"
   }
 }

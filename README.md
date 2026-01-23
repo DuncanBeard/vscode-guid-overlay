@@ -2,6 +2,31 @@
 
 Deterministic visual identity overlay for GUIDs/UUIDs in Visual Studio Code.
 
+## Features
+
+- **Hover over any GUID** to see a unique, deterministic avatar
+- **30 avatar styles** to choose from (robots, pixel art, emoji, and more!)
+- **Insert GUID command** with keyboard shortcut (`Ctrl+K, Ctrl+Alt+Shift+G`)
+- **Fully offline** - avatars are generated locally using DiceBear
+
+## Settings
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `guidVisualOverlay.avatarStyle` | Avatar style for GUID visualization | `bottts` |
+
+### Available Avatar Styles
+
+adventurer, avataaars, bigEars, bigSmile, bottts, croodles, dylan, funEmoji, glass, icons, identicon, initials, lorelei, micah, miniavs, notionists, openPeeps, personas, pixelArt, rings, shapes, thumbs, and more!
+
+### Adjusting Hover Delay
+
+The hover delay is controlled by VS Code's built-in setting:
+
+- **Setting:** `editor.hover.delay`
+- **Default:** 300ms
+- **Location:** Settings → Editor: Hover Delay
+
 ## Architecture Overview
 
 ### Core Principle: Deterministic Visual Identity

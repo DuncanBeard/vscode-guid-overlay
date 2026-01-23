@@ -37,8 +37,12 @@ export class GuidHoverProvider implements vscode.HoverProvider {
       return null;
     }
 
+    // Get configured avatar style
+    const config = vscode.workspace.getConfiguration('guidVisualOverlay');
+    const styleName = config.get<string>('avatarStyle', 'bottts');
+
     // Generate deterministic visual identity
-    const identity = generateVisualIdentity(guid);
+    const identity = generateVisualIdentity(guid, styleName);
 
     // Create hover content with visual overlay
     const hover = this.createHoverContent(guid, identity);
@@ -52,17 +56,17 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    */
   private createHoverContent(
     guid: string,
-    identity: { label: string; color: string; symbol: string; rawHash: string; identiconSvg: string }
+    identity: { label: string; color: string; symbol: string; rawHash: string; avatarSvg: string }
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
     markdown.isTrusted = true;
     markdown.supportHtml = true;
 
     // Convert SVG to base64 data URI for embedding in markdown
-    const svgBase64 = Buffer.from(identity.identiconSvg).toString('base64');
+    const svgBase64 = Buffer.from(identity.avatarSvg).toString('base64');
     const svgDataUri = `data:image/svg+xml;base64,${svgBase64}`;
 
-    // Large identicon image only
+    // Large avatar image only
     markdown.appendMarkdown(`<img src="${svgDataUri}" width="120" height="120" />`);
 
     return new vscode.Hover(markdown);
