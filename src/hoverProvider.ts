@@ -18,7 +18,7 @@ export class GuidHoverProvider implements vscode.HoverProvider {
   /**
    * Provide hover content for GUID at position
    * Returns null if no GUID found at position
-   * 
+   *
    * Avatar loads immediately; AAD info appears on subsequent hovers once cached
    */
   provideHover(
