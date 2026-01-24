@@ -2,7 +2,7 @@
 
 [install]
 # Freeze lockfile - don't update it
-frozen = false
+frozen = true
 
 # Install exact versions
 exact = true

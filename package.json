@@ -113,11 +113,12 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "bun run build.ts --minify",
+    "vscode:prepublish": "tsc --noEmit && bun run build.ts --minify",
     "build": "bun run build.ts",
     "compile": "bun run build.ts",
     "watch": "bun --watch build.ts",
-    "test": "bun test src/test/extension.test.ts"
+    "test": "tsc --noEmit && bun test src/test/extension.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/bun": "^1.1.15",
