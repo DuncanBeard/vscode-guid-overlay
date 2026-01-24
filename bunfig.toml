@@ -1,0 +1,8 @@
+# Bun configuration for VS Code extension
+
+[install]
+# Freeze lockfile - don't update it
+frozen = false
+
+# Install exact versions
+exact = true
