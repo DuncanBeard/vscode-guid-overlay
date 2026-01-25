@@ -8,7 +8,10 @@
 import * as vscode from 'vscode';
 import { getGuidAtPosition } from './guidDetector';
 import { generateVisualIdentity } from './visualIdentity';
-import { getCachedAadObject, lookupGuidInAad, formatAadObjectForHover, AadObject } from './aadLookup';
+import { getCachedAadObject, lookupGuidInAad, formatAadObjectForHover, clearAadLookupCache, AadObject } from './aadLookup';
+
+/** AAD lookup mode options */
+type AadLookupMode = 'disabled' | 'enabled' | 'auto';
 
 /** Track GUIDs with pending lookups to show loading state */
 const pendingLookups = new Set<string>();
@@ -22,13 +25,16 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    * Provide hover content for GUID at position
    * Returns null if no GUID found at position
    *
-   * Avatar shows immediately; AAD lookup triggered by button click
+   * Behavior depends on aadLookupMode setting:
+   * - disabled: Avatar only
+   * - enabled: Avatar + lookup button (results in notification)
+   * - auto: Wait for AAD lookup, then show avatar + info
    */
   provideHover(
     document: vscode.TextDocument,
     position: vscode.Position,
     token: vscode.CancellationToken
-  ): vscode.Hover | null {
+  ): vscode.ProviderResult<vscode.Hover> {
     // Get text at current line
     const line = document.lineAt(position.line);
     const lineText = line.text;
@@ -43,31 +49,86 @@ export class GuidHoverProvider implements vscode.HoverProvider {
       return null;
     }
 
-    // Get configured avatar style and AAD lookup setting
+    // Get configuration
     const config = vscode.workspace.getConfiguration('guidVisualOverlay');
     const styleName = config.get<string>('avatarStyle', 'bottts');
-    const enableAadLookup = config.get<boolean>('enableAadLookup', false);
+    const aadMode = config.get<AadLookupMode>('aadLookupMode', 'disabled');
+    const aadTimeout = config.get<number>('aadLookupTimeout', 5000);
 
     // Generate deterministic visual identity (synchronous)
     const identity = generateVisualIdentity(guid, styleName);
 
-    // Check cache synchronously for AAD info
+    // Handle based on mode
+    if (aadMode === 'auto') {
+      return this.provideHoverWithAutoLookup(guid, identity, aadTimeout, token);
+    } else {
+      return this.provideHoverImmediate(guid, identity, aadMode === 'enabled');
+    }
+  }
+
+  /**
+   * Provide hover immediately (for disabled/enabled modes)
+   */
+  private provideHoverImmediate(
+    guid: string,
+    identity: { avatarSvg: string },
+    enableLookupButton: boolean
+  ): vscode.Hover {
     let aadObject: AadObject | null = null;
     let showLookupButton = false;
 
-    if (enableAadLookup) {
+    if (enableLookupButton) {
       const cached = getCachedAadObject(guid);
       if (cached !== undefined) {
-        aadObject = cached; // May be null if previously looked up and not found
+        aadObject = cached;
       } else {
-        showLookupButton = true; // Not in cache, show button
+        showLookupButton = true;
       }
     }
 
-    // Create hover content with visual overlay (returns immediately)
-    const hover = this.createHoverContent(guid, identity, aadObject, showLookupButton);
+    return this.createHoverContent(guid, identity, aadObject, showLookupButton);
+  }
 
-    return hover;
+  /**
+   * Provide hover after waiting for AAD lookup (for auto mode)
+   */
+  private async provideHoverWithAutoLookup(
+    guid: string,
+    identity: { avatarSvg: string },
+    timeoutMs: number,
+    token: vscode.CancellationToken
+  ): Promise<vscode.Hover | null> {
+    // Check cache first
+    const cached = getCachedAadObject(guid);
+    if (cached !== undefined) {
+      // Already cached, return immediately
+      return this.createHoverContent(guid, identity, cached, false);
+    }
+
+    // Wait for lookup with timeout
+    try {
+      const result = await Promise.race([
+        lookupGuidInAad(guid),
+        new Promise<AadObject | null>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), timeoutMs)
+        ),
+        new Promise<AadObject | null>((_, reject) => {
+          token.onCancellationRequested(() => reject(new Error('cancelled')));
+        }),
+      ]);
+
+      if (token.isCancellationRequested) {
+        return null;
+      }
+
+      return this.createHoverContent(guid, identity, result, false);
+    } catch {
+      // Timeout or cancelled - show avatar without AAD info
+      if (token.isCancellationRequested) {
+        return null;
+      }
+      return this.createHoverContent(guid, identity, null, false);
+    }
   }
 
   /**
@@ -178,5 +239,37 @@ export function registerGuidHoverProvider(context: vscode.ExtensionContext): voi
     (guid: string) => executeAadLookup(guid)
   );
 
-  context.subscriptions.push(hoverDisposable, lookupCommand);
+  // Register command to look up GUID at cursor
+  const lookupAtCursorCommand = vscode.commands.registerCommand(
+    'guid-visual-overlay.lookupGuidAtCursor',
+    () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+      }
+
+      const position = editor.selection.active;
+      const line = editor.document.lineAt(position.line);
+      const guid = getGuidAtPosition(line.text, position.character);
+
+      if (!guid) {
+        vscode.window.showWarningMessage('No GUID found at cursor position');
+        return;
+      }
+
+      executeAadLookup(guid);
+    }
+  );
+
+  // Register command to clear AAD cache
+  const clearCacheCommand = vscode.commands.registerCommand(
+    'guid-visual-overlay.clearAadCache',
+    () => {
+      clearAadLookupCache();
+      vscode.window.showInformationMessage('Azure AD lookup cache cleared');
+    }
+  );
+
+  context.subscriptions.push(hoverDisposable, lookupCommand, lookupAtCursorCommand, clearCacheCommand);
 }
