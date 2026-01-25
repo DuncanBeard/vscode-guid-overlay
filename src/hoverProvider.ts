@@ -10,8 +10,8 @@ import { getGuidAtPosition } from './guidDetector';
 import { generateVisualIdentity } from './visualIdentity';
 import { getCachedAadObject, lookupGuidInAad, formatAadObjectForHover, AadObject } from './aadLookup';
 
-/** Track GUIDs with pending lookups to avoid duplicate refresh triggers */
-const pendingRefreshes = new Set<string>();
+/** Track GUIDs with pending lookups to show loading state */
+const pendingLookups = new Set<string>();
 
 /**
  * Hover provider for GUID visual overlays
@@ -22,7 +22,7 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    * Provide hover content for GUID at position
    * Returns null if no GUID found at position
    *
-   * Avatar shows immediately; AAD info appears when lookup completes (hover refreshes)
+   * Avatar shows immediately; AAD lookup triggered by button click
    */
   provideHover(
     document: vscode.TextDocument,
@@ -53,35 +53,21 @@ export class GuidHoverProvider implements vscode.HoverProvider {
 
     // Check cache synchronously for AAD info
     let aadObject: AadObject | null = null;
+    let showLookupButton = false;
+
     if (enableAadLookup) {
       const cached = getCachedAadObject(guid);
       if (cached !== undefined) {
-        // Use cached result (may be null if not found in AAD)
-        aadObject = cached;
-      } else if (!pendingRefreshes.has(guid)) {
-        // Not in cache and no pending refresh - trigger background lookup
-        pendingRefreshes.add(guid);
-        this.triggerBackgroundLookup(guid);
+        aadObject = cached; // May be null if previously looked up and not found
+      } else {
+        showLookupButton = true; // Not in cache, show button
       }
     }
 
     // Create hover content with visual overlay (returns immediately)
-    const hover = this.createHoverContent(guid, identity, aadObject);
+    const hover = this.createHoverContent(guid, identity, aadObject, showLookupButton);
 
     return hover;
-  }
-
-  /**
-   * Trigger AAD lookup in background and refresh hover when complete
-   */
-  private triggerBackgroundLookup(guid: string): void {
-    lookupGuidInAad(guid).then(() => {
-      pendingRefreshes.delete(guid);
-      // Refresh the hover to show AAD info
-      vscode.commands.executeCommand('editor.action.showHover');
-    }).catch(() => {
-      pendingRefreshes.delete(guid);
-    });
   }
 
   /**
@@ -91,7 +77,8 @@ export class GuidHoverProvider implements vscode.HoverProvider {
   private createHoverContent(
     guid: string,
     identity: { avatarSvg: string },
-    aadObject: AadObject | null
+    aadObject: AadObject | null,
+    showLookupButton: boolean
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
     markdown.isTrusted = true;
@@ -104,13 +91,72 @@ export class GuidHoverProvider implements vscode.HoverProvider {
     // Large avatar image only
     markdown.appendMarkdown(`<img src="${svgDataUri}" width="120" height="120" />`);
 
-    // Append AAD object info if found
+    // Append AAD section based on status
     if (aadObject) {
       markdown.appendMarkdown('\n\n---\n\n');
       markdown.appendMarkdown(formatAadObjectForHover(aadObject));
+    } else if (showLookupButton) {
+      // Show button to trigger lookup
+      markdown.appendMarkdown('\n\n---\n\n');
+      const commandUri = `command:guid-visual-overlay.lookupAad?${encodeURIComponent(JSON.stringify(guid))}`;
+      markdown.appendMarkdown(`[🔍 Look up in Azure AD](${commandUri})`);
     }
 
     return new vscode.Hover(markdown);
+  }
+}
+
+/**
+ * Execute AAD lookup and show results in a notification
+ */
+async function executeAadLookup(guid: string): Promise<void> {
+  if (pendingLookups.has(guid)) {
+    return; // Already in progress
+  }
+
+  pendingLookups.add(guid);
+
+  try {
+    // Show progress while looking up
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: 'Looking up GUID in Azure AD...',
+        cancellable: false,
+      },
+      async () => {
+        const result = await lookupGuidInAad(guid);
+
+        if (result) {
+          // Format the result for display
+          const icon = result.type === 'user' ? '👤' :
+                       result.type === 'group' ? '👥' :
+                       result.type === 'servicePrincipal' ? '🤖' : '📱';
+          const typeLabel = result.type === 'user' ? 'User' :
+                            result.type === 'group' ? 'Group' :
+                            result.type === 'servicePrincipal' ? 'Service Principal' : 'App Registration';
+
+          let message = `${icon} ${typeLabel}: ${result.displayName}`;
+
+          // Add extra details
+          if (result.mail) {
+            message += ` (${result.mail})`;
+          } else if (result.userPrincipalName) {
+            message += ` (${result.userPrincipalName})`;
+          } else if (result.appId) {
+            message += ` (App ID: ${result.appId})`;
+          }
+
+          vscode.window.showInformationMessage(message);
+        } else {
+          vscode.window.showInformationMessage(`GUID not found in Azure AD: ${guid}`);
+        }
+      }
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage('Failed to look up GUID in Azure AD');
+  } finally {
+    pendingLookups.delete(guid);
   }
 }
 
@@ -121,10 +167,16 @@ export function registerGuidHoverProvider(context: vscode.ExtensionContext): voi
   const provider = new GuidHoverProvider();
 
   // Register for all languages/files
-  const disposable = vscode.languages.registerHoverProvider(
+  const hoverDisposable = vscode.languages.registerHoverProvider(
     { scheme: '*', language: '*' },
     provider
   );
 
-  context.subscriptions.push(disposable);
+  // Register AAD lookup command (triggered by hover button)
+  const lookupCommand = vscode.commands.registerCommand(
+    'guid-visual-overlay.lookupAad',
+    (guid: string) => executeAadLookup(guid)
+  );
+
+  context.subscriptions.push(hoverDisposable, lookupCommand);
 }

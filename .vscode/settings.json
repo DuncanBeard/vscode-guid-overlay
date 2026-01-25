@@ -3,5 +3,8 @@
   "mochaExplorer.require": [],
   "mochaExplorer.ui": "bdd",
   "typescript.tsc.autoDetect": "off",
-  "npm.packageManager": "bun"
+  "npm.packageManager": "bun",
+  "chat.tools.terminal.autoApprove": {
+    "bun": true
+  }
 }
