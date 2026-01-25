@@ -1,5 +1,7 @@
 {
   "mochaExplorer.files": "out/test/**/*.test.js",
   "mochaExplorer.require": [],
-  "mochaExplorer.ui": "bdd"
+  "mochaExplorer.ui": "bdd",
+  "typescript.tsc.autoDetect": "off",
+  "npm.packageManager": "bun"
 }
