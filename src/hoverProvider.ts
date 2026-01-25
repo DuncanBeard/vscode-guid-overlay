@@ -8,7 +8,10 @@
 import * as vscode from 'vscode';
 import { getGuidAtPosition } from './guidDetector';
 import { generateVisualIdentity } from './visualIdentity';
-import { getCachedAadObject, triggerAadLookup, formatAadObjectForHover, AadObject } from './aadLookup';
+import { getCachedAadObject, lookupGuidInAad, formatAadObjectForHover, AadObject } from './aadLookup';
+
+/** Track GUIDs with pending lookups to avoid duplicate refresh triggers */
+const pendingRefreshes = new Set<string>();
 
 /**
  * Hover provider for GUID visual overlays
@@ -19,7 +22,7 @@ export class GuidHoverProvider implements vscode.HoverProvider {
    * Provide hover content for GUID at position
    * Returns null if no GUID found at position
    *
-   * Avatar loads immediately; AAD info appears on subsequent hovers once cached
+   * Avatar shows immediately; AAD info appears when lookup completes (hover refreshes)
    */
   provideHover(
     document: vscode.TextDocument,
@@ -48,16 +51,17 @@ export class GuidHoverProvider implements vscode.HoverProvider {
     // Generate deterministic visual identity (synchronous)
     const identity = generateVisualIdentity(guid, styleName);
 
-    // Check cache synchronously for AAD info (non-blocking)
+    // Check cache synchronously for AAD info
     let aadObject: AadObject | null = null;
     if (enableAadLookup) {
-      // Get from cache if available (immediate)
       const cached = getCachedAadObject(guid);
       if (cached !== undefined) {
-        aadObject = cached; // Use cached result (may be null if not found in AAD)
-      } else {
-        // Not in cache - trigger background lookup for next hover
-        triggerAadLookup(guid);
+        // Use cached result (may be null if not found in AAD)
+        aadObject = cached;
+      } else if (!pendingRefreshes.has(guid)) {
+        // Not in cache and no pending refresh - trigger background lookup
+        pendingRefreshes.add(guid);
+        this.triggerBackgroundLookup(guid);
       }
     }
 
@@ -68,12 +72,26 @@ export class GuidHoverProvider implements vscode.HoverProvider {
   }
 
   /**
+   * Trigger AAD lookup in background and refresh hover when complete
+   */
+  private triggerBackgroundLookup(guid: string): void {
+    lookupGuidInAad(guid).then(() => {
+      pendingRefreshes.delete(guid);
+      // Refresh the hover to show AAD info
+      vscode.commands.executeCommand('editor.action.showHover');
+    }).catch(() => {
+      pendingRefreshes.delete(guid);
+    });
+  }
+
+  /**
    * Create hover content with visual overlay
    * Uses Markdown for formatting and color display
    */
   private createHoverContent(
     guid: string,
-    identity: { avatarSvg: string }
+    identity: { avatarSvg: string },
+    aadObject: AadObject | null
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
     markdown.isTrusted = true;
