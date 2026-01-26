@@ -133,7 +133,7 @@
           "default": 5000,
           "minimum": 1000,
           "maximum": 30000,
-          "description": "Timeout in milliseconds for Azure AD lookup in 'auto' mode. The hover will wait up to this duration for AAD results."
+          "description": "Timeout in milliseconds for Azure AD operations. In 'auto' mode, the hover will wait up to this duration for AAD lookup results. This timeout also applies to Azure CLI (az) availability checks used in all modes."
         }
       }
     }
