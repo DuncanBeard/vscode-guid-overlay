@@ -96,18 +96,21 @@ bun install
 # Development build
 bun run build
 
-# Production build (minified)
-bun run build.ts --minify
+# Watch mode (auto-rebuilds on changes)
+bun run watch
 
-# Watch mode
-bun --watch build.ts
+# Production build (minified)
+bun run vscode:prepublish
 ```
 
 ### Publishing
 
 ```bash
-bun run vscode:prepublish
+# Build and publish to VS Code Marketplace
+vsce publish
 ```
+
+Note: `vsce publish` automatically runs `vscode:prepublish` before packaging.
 
 ## License
 
