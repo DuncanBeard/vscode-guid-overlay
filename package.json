@@ -29,6 +29,14 @@
       {
         "command": "guid-visual-overlay.insertGuid",
         "title": "Insert GUID"
+      },
+      {
+        "command": "guid-visual-overlay.lookupGuidAtCursor",
+        "title": "GUID: Look up in Azure AD"
+      },
+      {
+        "command": "guid-visual-overlay.clearAadCache",
+        "title": "GUID: Clear Azure AD Cache"
       }
     ],
     "keybindings": [
@@ -84,6 +92,24 @@
             "Personas - Character personas"
           ],
           "description": "The avatar style to use for GUID visualization"
+        },
+        "guidVisualOverlay.aadLookupMode": {
+          "type": "string",
+          "default": "disabled",
+          "enum": ["disabled", "enabled", "auto"],
+          "enumDescriptions": [
+            "Disabled - No Azure AD lookup functionality",
+            "Enabled - Show lookup button in hover; results appear in notification",
+            "Auto - Wait for Azure AD lookup before showing hover (uses timeout setting)"
+          ],
+          "description": "Azure AD lookup mode. Requires Azure CLI (az) to be installed and authenticated."
+        },
+        "guidVisualOverlay.aadLookupTimeout": {
+          "type": "number",
+          "default": 5000,
+          "minimum": 1000,
+          "maximum": 30000,
+          "description": "Timeout in milliseconds for Azure AD operations. In 'auto' mode, the hover will wait up to this duration for AAD lookup results. This timeout also applies to Azure CLI (az) availability checks used in all modes."
         }
       }
     }
