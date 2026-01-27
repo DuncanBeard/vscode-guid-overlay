@@ -2,7 +2,7 @@
   "name": "guid-visual-overlay",
   "displayName": "GUID Visual Overlay",
   "description": "Deterministic visual identity overlay for GUIDs/UUIDs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "duncanbeard",
   "icon": "images/icon.png",
   "galleryBanner": {
@@ -29,6 +29,14 @@
       {
         "command": "guid-visual-overlay.insertGuid",
         "title": "Insert GUID"
+      },
+      {
+        "command": "guid-visual-overlay.lookupGuidAtCursor",
+        "title": "GUID: Look up in Azure AD"
+      },
+      {
+        "command": "guid-visual-overlay.clearAadCache",
+        "title": "GUID: Clear Azure AD Cache"
       }
     ],
     "keybindings": [
@@ -52,28 +60,16 @@
             "bigEarsNeutral",
             "bigSmile",
             "bottts",
-            "botttsNeutral",
             "croodles",
             "croodlesNeutral",
             "dylan",
-            "funEmoji",
-            "glass",
-            "icons",
-            "identicon",
-            "initials",
             "lorelei",
             "loreleiNeutral",
             "micah",
-            "miniavs",
             "notionists",
             "notionistsNeutral",
             "openPeeps",
-            "personas",
-            "pixelArt",
-            "pixelArtNeutral",
-            "rings",
-            "shapes",
-            "thumbs"
+            "personas"
           ],
           "enumDescriptions": [
             "Adventurer - Illustrated adventure characters",
@@ -84,49 +80,50 @@
             "Big Ears Neutral - Big Ears with neutral expressions",
             "Big Smile - Happy smiling characters",
             "Bottts - Robot avatars (VS Code style)",
-            "Bottts Neutral - Robots with neutral colors",
             "Croodles - Hand-drawn doodle characters",
             "Croodles Neutral - Croodles with neutral expressions",
             "Dylan - Stylized portrait illustrations",
-            "Fun Emoji - Colorful emoji-style faces",
-            "Glass - Glossy abstract shapes",
-            "Icons - Simple icon-based avatars",
-            "Identicon - GitHub-style geometric patterns",
-            "Initials - Letter-based avatars",
             "Lorelei - Illustrated portrait style",
             "Lorelei Neutral - Lorelei with neutral expressions",
             "Micah - Modern illustrated avatars",
-            "Miniavs - Minimal avatar illustrations",
             "Notionists - Notion-style characters",
             "Notionists Neutral - Notionists with neutral expressions",
             "Open Peeps - Hand-drawn people illustrations",
-            "Personas - Character personas",
-            "Pixel Art - Retro pixel art characters",
-            "Pixel Art Neutral - Pixel art with neutral expressions",
-            "Rings - Colorful ring patterns",
-            "Shapes - Abstract geometric shapes",
-            "Thumbs - Thumbs up/down icons"
+            "Personas - Character personas"
           ],
           "description": "The avatar style to use for GUID visualization"
+        },
+        "guidVisualOverlay.aadLookupMode": {
+          "type": "string",
+          "default": "disabled",
+          "enum": ["disabled", "enabled", "auto"],
+          "enumDescriptions": [
+            "Disabled - No Azure AD lookup functionality",
+            "Enabled - Show lookup button in hover; results appear in notification",
+            "Auto - Wait for Azure AD lookup before showing hover (uses timeout setting)"
+          ],
+          "description": "Azure AD lookup mode. Requires Azure CLI (az) to be installed and authenticated."
+        },
+        "guidVisualOverlay.aadLookupTimeout": {
+          "type": "number",
+          "default": 5000,
+          "minimum": 1000,
+          "maximum": 30000,
+          "description": "Timeout in milliseconds for Azure AD operations. In 'auto' mode, the hover will wait up to this duration for AAD lookup results. This timeout also applies to Azure CLI (az) availability checks used in all modes."
         }
       }
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
-    "compile": "npm run esbuild-base -- --sourcemap",
-    "watch": "npm run esbuild-base -- --sourcemap --watch",
-    "compile-tests": "tsc -p ./",
-    "pretest": "npm run compile-tests",
-    "test": "npm run compile-tests && mocha out/test/**/*.test.js"
+    "vscode:prepublish": "bun run build.ts --minify",
+    "build": "bun run build.ts",
+    "compile": "bun run build.ts",
+    "watch": "bun --watch build.ts",
+    "test": "bun test src/test/extension.test.ts"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^18.0.0",
+    "@types/bun": "^1.1.15",
     "@types/vscode": "^1.75.0",
-    "esbuild": "^0.27.2",
-    "mocha": "^11.7.5",
     "sharp": "^0.34.5",
     "typescript": "^5.0.0"
   },
