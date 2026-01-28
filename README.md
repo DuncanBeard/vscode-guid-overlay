@@ -84,7 +84,7 @@ This extension is built with [Bun](https://bun.sh), a fast JavaScript runtime an
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) - Install with `curl -fsSL https://bun.sh/install | bash`
+- [Bun](https://bun.sh) - Install via your package manager (see the [official installation docs](https://bun.sh/docs/installation))
 - VS Code
 
 ### Building
