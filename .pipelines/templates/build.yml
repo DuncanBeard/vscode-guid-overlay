@@ -13,6 +13,11 @@ steps:
     inputs:
       versionSpec: "20.x"
 
+  - script: |
+      echo "registry=https://pkgs.dev.azure.com/piemini/iPIE/_packaging/iPIE/npm/registry/" > .npmrc
+      echo "always-auth=true" >> .npmrc
+    displayName: "Configure npm registry"
+
   - task: npmAuthenticate@0
     displayName: "Authenticate npm feed"
     inputs:
