@@ -13,6 +13,11 @@ steps:
     inputs:
       versionSpec: "20.x"
 
+  - task: npmAuthenticate@0
+    displayName: "Authenticate npm feed"
+    inputs:
+      workingFile: $(Build.SourcesDirectory)/.npmrc
+
   - task: Npm@1
     displayName: "Install dependencies"
     inputs:
