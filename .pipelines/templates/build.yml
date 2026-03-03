@@ -10,7 +10,8 @@ parameters:
 steps:
   - script: |
       node --version
-      npm install -g bun
+      curl -fsSL https://bun.sh/install | bash
+      echo "##vso[task.prependpath]$HOME/.bun/bin"
     displayName: "Install Bun"
 
   - script: bun install --frozen-lockfile
