@@ -85,24 +85,25 @@ extends:
                 inputs:
                   versionSpec: '20.x'
 
-              - script: |
-                  curl -fsSL https://bun.sh/install | bash
-                  echo "##vso[task.prependpath]$HOME/.bun/bin"
-                displayName: 'Install Bun'
+              - task: npmAuthenticate@0
+                displayName: 'Authenticate npm feed'
+                inputs:
+                  workingFile: $(Build.SourcesDirectory)/.npmrc
 
-              - script: bun install
+              - script: npm ci
                 displayName: 'Install dependencies'
                 workingDirectory: $(Build.SourcesDirectory)
 
-              - script: bun run build
+              - script: npm run build
                 displayName: 'Build extension'
                 workingDirectory: $(Build.SourcesDirectory)
 
-              - script: bun test
+              - script: npm test
                 displayName: 'Run tests'
                 workingDirectory: $(Build.SourcesDirectory)
 
               - script: |
-                  npm install -g @vscode/vsce
                   mkdir -p $(OUTPUTROOT)
-                  vsce package --no-dependencies --out $(OUTPUTROOT)
+                  npx @vscode/vsce package --no-dependencies --out $(OUTPUTROOT)
+                displayName: 'Package VSIX'
+                workingDirectory: $(Build.SourcesDirectory)
