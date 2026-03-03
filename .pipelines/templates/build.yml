@@ -13,13 +13,10 @@ steps:
     inputs:
       versionSpec: "20.x"
 
-  - task: npmAuthenticate@0
-    displayName: "Authenticate npm feed"
-    inputs:
-      workingFile: .npmrc
-
-  - script: npm ci
+  - script: npm ci --maxsockets=3
     displayName: "Install dependencies"
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
 
   - script: npm test
     displayName: "Run tests"
