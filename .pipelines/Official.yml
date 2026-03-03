@@ -53,8 +53,10 @@ extends:
               type: linux
 
             variables:
+              LinuxContainerImage: "mcr.microsoft.com/onebranch/azurelinux/build:3.0"
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
               ob_artifactBaseName: drop_vsix_package
+              ob_git_checkout: true
 
             steps:
               - template: /.pipelines/templates/build.yml@self
