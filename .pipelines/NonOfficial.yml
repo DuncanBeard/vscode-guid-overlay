@@ -45,7 +45,7 @@ extends:
           - job: build
             displayName: "Build VSIX"
             pool:
-              type: windows
+              type: release
 
             variables:
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
