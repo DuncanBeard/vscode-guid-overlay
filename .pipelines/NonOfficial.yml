@@ -34,6 +34,10 @@ extends:
       tsa:
         enabled: false
 
+    featureFlags:
+      LinuxHostVersion:
+        Network: R1
+
     stages:
       - stage: Build
         displayName: "Build & Package VSIX"
