@@ -35,9 +35,8 @@ extends:
         enabled: false
 
     featureFlags:
-      WindowsHostVersion:
-        Version: 2022
-        Network: R1
+      networkisolation:
+        policy: Npm
       LinuxHostVersion:
         Network: R1
 
@@ -48,10 +47,10 @@ extends:
           - job: build
             displayName: "Build VSIX"
             pool:
-              type: windows
+              type: linux
 
             variables:
-              WindowsContainerImage: "onebranch.azurecr.io/windows/ltsc2022/vse2022:latest"
+              LinuxContainerImage: "mcr.microsoft.com/onebranch/azurelinux/build:3.0"
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
               ob_artifactBaseName: drop_vsix_package
               ob_git_checkout: true
