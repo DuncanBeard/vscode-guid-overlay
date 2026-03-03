@@ -1,0 +1,31 @@
+parameters:
+  - name: buildType
+    displayName: "Build type"
+    type: string
+    default: "CI"
+    values:
+      - CI
+      - Official
+
+steps:
+  - task: NodeTool@0
+    displayName: "Install Node.js"
+    inputs:
+      versionSpec: "20.x"
+
+  - script: npm install -g bun
+    displayName: "Install Bun"
+
+  - script: bun install --frozen-lockfile
+    displayName: "Install dependencies"
+
+  - script: bun test
+    displayName: "Run tests"
+
+  - script: bun run vscode:prepublish
+    displayName: "Production build"
+
+  - script: |
+      npm install -g @vscode/vsce
+      vsce package --out $(Build.ArtifactStagingDirectory)/guid-visual-overlay.vsix
+    displayName: "Package VSIX"

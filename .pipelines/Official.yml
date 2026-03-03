@@ -1,0 +1,129 @@
+#################################################################################
+#                 1ESPT Official Pipeline - GUID Visual Overlay                 #
+#  Build VSIX extension + replicate to USSec/USNat airgap clouds               #
+#################################################################################
+
+trigger:
+  branches:
+    include:
+      - "release/*"
+
+schedules:
+  - cron: "0 */2 * * *"
+    displayName: "Continuous Build (every 2h)"
+    branches:
+      include:
+        - "main"
+    batch: true
+    always: false
+
+parameters:
+  - name: debug
+    displayName: "Enable debug output"
+    type: boolean
+    default: false
+
+  - name: replicateToAGC
+    displayName: "Replicate to AGC (USSec + USNat)"
+    type: boolean
+    default: true
+
+resources:
+  repositories:
+    - repository: 1ESPipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/1ESPipelineTemplates
+      ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    featureFlags:
+      enableSRMonitoring: true
+
+    stages:
+      # ── Build ──────────────────────────────────────────────────────────
+      - stage: Build
+        displayName: "Build & Package VSIX"
+        jobs:
+          - job: build
+            displayName: "Build VSIX"
+            pool:
+              type: linux
+
+            variables:
+              ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
+              ob_artifactBaseName: drop_vsix_package
+
+            steps:
+              - template: /.pipelines/templates/build.yml@self
+                parameters:
+                  buildType: Official
+
+      # ── USSec Replication ──────────────────────────────────────────────
+      - stage: USSec_Replication
+        displayName: "USSec: Replication"
+        condition: ${{ eq(parameters.replicateToAGC, true) }}
+        dependsOn: [Build]
+
+        variables:
+          ob_release_environment: USSec
+          ob_release_stagetype: replication
+          ArtifactToDeploy: drop_vsix_package
+          CvrpManifestRelativePath: \build.manifest
+
+        jobs:
+          - job: ReplicateUSSecJob
+            displayName: "Replicate build to USSec"
+            pool:
+              type: release
+            steps:
+              - download: current
+                artifact: drop_vsix_package
+
+          - job: USSecMonitoring
+            displayName: "USSec release monitoring"
+            dependsOn: ReplicateUSSecJob
+            pool:
+              type: server
+            cancelTimeoutInMinutes: 5
+            timeoutInMinutes: 14400
+            steps:
+              - task: SovereignReleaseMonitoring@0
+                displayName: "Sovereign Release Monitoring"
+                inputs:
+                  requestedMonitorTimeout: 14400
+
+      # ── USNat Replication ──────────────────────────────────────────────
+      - stage: USNat_Replication
+        displayName: "USNat: Replication"
+        condition: ${{ eq(parameters.replicateToAGC, true) }}
+        dependsOn: [Build]
+
+        variables:
+          ob_release_environment: USNat
+          ob_release_stagetype: replication
+          ArtifactToDeploy: drop_vsix_package
+          CvrpManifestRelativePath: \build.manifest
+
+        jobs:
+          - job: ReplicateUSNatJob
+            displayName: "Replicate build to USNat"
+            pool:
+              type: release
+            steps:
+              - download: current
+                artifact: drop_vsix_package
+
+          - job: USNatMonitoring
+            displayName: "USNat release monitoring"
+            dependsOn: ReplicateUSNatJob
+            pool:
+              type: server
+            cancelTimeoutInMinutes: 5
+            timeoutInMinutes: 14400
+            steps:
+              - task: SovereignReleaseMonitoring@0
+                displayName: "Sovereign Release Monitoring"
+                inputs:
+                  requestedMonitorTimeout: 14400

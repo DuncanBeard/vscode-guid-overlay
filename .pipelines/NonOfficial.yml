@@ -1,0 +1,49 @@
+#################################################################################
+#              1ESPT Non-Official Pipeline - GUID Visual Overlay                #
+#  Build-only pipeline for PR validation and CI testing (no approval gates)     #
+#################################################################################
+
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+      - "release/*"
+
+parameters:
+  - name: debug
+    displayName: "Enable debug output"
+    type: boolean
+    default: false
+
+resources:
+  repositories:
+    - repository: 1ESPipelineTemplates
+      type: git
+      name: 1ESPipelineTemplates/1ESPipelineTemplates
+      ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Unofficial.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    stages:
+      - stage: Build
+        displayName: "Build & Package VSIX"
+        jobs:
+          - job: build
+            displayName: "Build VSIX"
+            pool:
+              type: linux
+
+            variables:
+              ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
+              ob_artifactBaseName: drop_vsix_package
+
+            steps:
+              - template: /.pipelines/templates/build.yml@self
+                parameters:
+                  buildType: CI
