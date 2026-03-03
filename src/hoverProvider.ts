@@ -142,15 +142,28 @@ export class GuidHoverProvider implements vscode.HoverProvider {
     showLookupButton: boolean
   ): vscode.Hover {
     const markdown = new vscode.MarkdownString();
-    markdown.isTrusted = true;
-    markdown.supportHtml = true;
+    // Security: Use markdown image syntax instead of HTML
+    // This avoids the need for isTrusted=true and supportHtml=true
+    markdown.isTrusted = false;
+    markdown.supportHtml = false;
 
     // Convert SVG to base64 data URI for embedding in markdown
     const svgBase64 = Buffer.from(identity.avatarSvg).toString('base64');
     const svgDataUri = `data:image/svg+xml;base64,${svgBase64}`;
 
-    // Large avatar image only
-    markdown.appendMarkdown(`<img src="${svgDataUri}" width="120" height="120" />`);
+    // Use markdown image syntax (safer than HTML)
+    markdown.appendMarkdown(`![GUID Avatar](${svgDataUri})`);
+
+    // Append AAD section based on status
+    if (aadObject) {
+      markdown.appendMarkdown('\n\n---\n\n');
+      markdown.appendMarkdown(formatAadObjectForHover(aadObject));
+    } else if (showLookupButton) {
+      // Show button to trigger lookup
+      markdown.appendMarkdown('\n\n---\n\n');
+      const commandUri = `command:guid-visual-overlay.lookupAad?${encodeURIComponent(JSON.stringify(guid))}`;
+      markdown.appendMarkdown(`[🔍 Look up in Azure AD](${commandUri})`);
+    }
 
     // Append AAD section based on status
     if (aadObject) {
