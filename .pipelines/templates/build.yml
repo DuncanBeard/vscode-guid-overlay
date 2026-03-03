@@ -13,8 +13,10 @@ steps:
       npm --version
     displayName: "Check Node.js"
 
-  - script: npm ci
+  - task: Npm@1
     displayName: "Install dependencies"
+    inputs:
+      command: ci
 
   - script: npm test
     displayName: "Run tests"
