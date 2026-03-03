@@ -13,15 +13,13 @@ steps:
     inputs:
       versionSpec: "20.x"
 
-  - script: |
-      npm ci --maxsockets=3 --verbose 2>&1 || {
-        echo "##[warning]npm ci failed, dumping debug log..."
-        cat /root/.npm/_logs/*-debug-*.log 2>/dev/null || echo "No debug log found"
-        exit 1
-      }
+  - task: npmAuthenticate@0
+    displayName: "Authenticate npm feed"
+    inputs:
+      workingFile: .npmrc
+
+  - script: npm ci
     displayName: "Install dependencies"
-    env:
-      NODE_OPTIONS: "--max-old-space-size=4096"
 
   - script: npm test
     displayName: "Run tests"
