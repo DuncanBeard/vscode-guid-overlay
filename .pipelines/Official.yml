@@ -38,6 +38,12 @@ resources:
 extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
+    sdl:
+      sourceAnalysisPool:
+        name: Azure Pipelines
+        image: windows-latest
+        os: windows
+
     featureFlags:
       enableSRMonitoring: true
 

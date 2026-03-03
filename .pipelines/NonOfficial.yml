@@ -30,6 +30,12 @@ resources:
 extends:
   template: v1/1ES.Unofficial.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
+    sdl:
+      sourceAnalysisPool:
+        name: Azure Pipelines
+        image: windows-latest
+        os: windows
+
     stages:
       - stage: Build
         displayName: "Build & Package VSIX"
