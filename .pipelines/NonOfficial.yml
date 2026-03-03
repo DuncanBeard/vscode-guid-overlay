@@ -35,6 +35,9 @@ extends:
         enabled: false
 
     featureFlags:
+      WindowsHostVersion:
+        Version: 2022
+        Network: R1
       LinuxHostVersion:
         Network: R1
 
