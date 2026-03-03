@@ -8,10 +8,10 @@ parameters:
       - Official
 
 steps:
-  - script: |
-      node --version
-      npm --version
-    displayName: "Check Node.js"
+  - task: NodeTool@0
+    displayName: "Install Node.js"
+    inputs:
+      versionSpec: "20.x"
 
   - task: Npm@1
     displayName: "Install dependencies"

@@ -54,10 +54,9 @@ extends:
           - job: build
             displayName: "Build VSIX"
             pool:
-              type: linux
+              type: windows
 
             variables:
-              LinuxContainerImage: "mcr.microsoft.com/onebranch/azurelinux/build:3.0"
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
               ob_artifactBaseName: drop_vsix_package
               ob_git_checkout: true
