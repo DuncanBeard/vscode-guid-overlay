@@ -1,5 +1,5 @@
 #################################################################################
-#                 1ESPT Official Pipeline - GUID Visual Overlay                 #
+#                 OneBranch Official Pipeline - GUID Visual Overlay              #
 #  Build VSIX extension + replicate to USSec/USNat airgap clouds               #
 #################################################################################
 
@@ -30,27 +30,17 @@ parameters:
 
 resources:
   repositories:
-    - repository: 1ESPipelineTemplates
+    - repository: templates
       type: git
-      name: 1ESPipelineTemplates/1ESPipelineTemplates
-      ref: refs/tags/release
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
 
 extends:
-  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  template: v2/OneBranch.Official.CrossPlat.yml@templates
   parameters:
-    pool:
-      name: Azure-Pipelines-1ESPT-ExDShared
-      image: ubuntu-latest
-      os: linux
-
-    sdl:
-      sourceAnalysisPool:
-        name: Azure-Pipelines-1ESPT-ExDShared
-        image: windows-latest
-        os: windows
-
-    featureFlags:
-      enableSRMonitoring: true
+    globalSdl:
+      tsa:
+        enabled: false
 
     stages:
       # ── Build ──────────────────────────────────────────────────────────
@@ -59,6 +49,8 @@ extends:
         jobs:
           - job: build
             displayName: "Build VSIX"
+            pool:
+              type: linux
 
             variables:
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
