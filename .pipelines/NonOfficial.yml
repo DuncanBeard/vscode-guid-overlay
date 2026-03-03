@@ -30,9 +30,14 @@ resources:
 extends:
   template: v1/1ES.Unofficial.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: ubuntu-latest
+      os: linux
+
     sdl:
       sourceAnalysisPool:
-        name: Azure Pipelines
+        name: Azure-Pipelines-1ESPT-ExDShared
         image: windows-latest
         os: windows
 
@@ -42,8 +47,6 @@ extends:
         jobs:
           - job: build
             displayName: "Build VSIX"
-            pool:
-              type: linux
 
             variables:
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
