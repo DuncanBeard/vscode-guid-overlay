@@ -13,10 +13,8 @@ steps:
     inputs:
       versionSpec: "20.x"
 
-  - task: Npm@1
+  - script: npm ci --registry https://registry.npmjs.org
     displayName: "Install dependencies"
-    inputs:
-      command: ci
 
   - script: npm test
     displayName: "Run tests"
