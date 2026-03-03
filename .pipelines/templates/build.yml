@@ -10,20 +10,18 @@ parameters:
 steps:
   - script: |
       node --version
-      curl -fsSL https://bun.sh/install | bash
-      echo "##vso[task.prependpath]$HOME/.bun/bin"
-    displayName: "Install Bun"
+      npm --version
+    displayName: "Check Node.js"
 
-  - script: bun install --frozen-lockfile
+  - script: npm ci
     displayName: "Install dependencies"
 
-  - script: bun test
+  - script: npm test
     displayName: "Run tests"
 
-  - script: bun run vscode:prepublish
+  - script: npm run vscode:prepublish
     displayName: "Production build"
 
   - script: |
-      npm install -g @vscode/vsce
-      vsce package --out $(Build.ArtifactStagingDirectory)/guid-visual-overlay.vsix
+      npx @vscode/vsce package --out $(Build.ArtifactStagingDirectory)/guid-visual-overlay.vsix
     displayName: "Package VSIX"

@@ -98,7 +98,11 @@
         "guidVisualOverlay.aadLookupMode": {
           "type": "string",
           "default": "disabled",
-          "enum": ["disabled", "enabled", "auto"],
+          "enum": [
+            "disabled",
+            "enabled",
+            "auto"
+          ],
           "enumDescriptions": [
             "Disabled - No Azure AD lookup functionality",
             "Enabled - Show lookup button in hover; results appear in notification",
@@ -117,16 +121,20 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "bun run build.ts --minify",
-    "build": "bun run build.ts",
-    "compile": "bun run build.ts",
-    "watch": "bun --watch build.ts",
-    "test": "bun test src/test/extension.test.ts"
+    "vscode:prepublish": "node build.js --minify",
+    "build": "node build.js",
+    "compile": "node build.js",
+    "watch": "node build.js --watch",
+    "test": "npx mocha --require ts-node/register src/test/extension.test.ts --timeout 10000"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.15",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^25.3.3",
     "@types/vscode": "^1.75.0",
+    "esbuild": "^0.24.0",
+    "mocha": "^10.0.0",
     "sharp": "^0.34.5",
+    "ts-node": "^10.9.0",
     "typescript": "^5.0.0"
   },
   "dependencies": {
