@@ -13,7 +13,12 @@ steps:
     inputs:
       versionSpec: "20.x"
 
-  - script: npm ci --registry https://registry.npmjs.org
+  - task: npmAuthenticate@0
+    displayName: "Authenticate npm feed"
+    inputs:
+      workingFile: .npmrc
+
+  - script: npm ci
     displayName: "Install dependencies"
 
   - script: npm test
