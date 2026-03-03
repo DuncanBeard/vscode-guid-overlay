@@ -54,9 +54,10 @@ extends:
           - job: build
             displayName: "Build VSIX"
             pool:
-              type: release
+              type: windows
 
             variables:
+              WindowsContainerImage: "onebranch.azurecr.io/windows/ltsc2022/vse2022:latest"
               ob_outputDirectory: "$(Build.ArtifactStagingDirectory)"
               ob_artifactBaseName: drop_vsix_package
               ob_git_checkout: true
