@@ -29,9 +29,18 @@ steps:
   - script: npm test
     displayName: "Run tests"
 
+  - script: |
+      MAJOR_MINOR=$(node -p "require('./package.json').version.split('.').slice(0,2).join('.')")
+      VERSION="${MAJOR_MINOR}.$(Build.BuildId)"
+      echo "##vso[task.setvariable variable=EXTENSION_VERSION]${VERSION}"
+      echo "##vso[build.updatebuildnumber]${VERSION}"
+      node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.version='${VERSION}'; fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
+      echo "Extension version set to: ${VERSION}"
+    displayName: "Stamp version from pipeline"
+
   - script: npm run vscode:prepublish
     displayName: "Production build"
 
   - script: |
-      npx @vscode/vsce package --out $(Build.ArtifactStagingDirectory)/guid-visual-overlay.vsix
+      npx @vscode/vsce package --out $(Build.ArtifactStagingDirectory)/guid-visual-overlay-$(EXTENSION_VERSION).vsix
     displayName: "Package VSIX"
